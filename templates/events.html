@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events | Better Homes Initiative{% endblock %}
+
+{% block content %}
+<header class="py-5 bg-bhi-green text-white text-center">
+    <div class="container">
+        <h1 class="fw-bold">Upcoming Events</h1>
+        <p class="lead">Join us in our next activity.</p>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Featured Upcoming Event -->
+        {% if featured_event %}
+        <div class="card border-0 shadow mb-5 overflow-hidden">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    <img src="{{ featured_event.image.url }}" class="img-fluid h-100 object-fit-cover" alt="{{ featured_event.title }}">
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="card-body p-5">
+                        <span class="badge bg-warning text-dark mb-2">Next Event</span>
+                        <h2 class="card-title fw-bold">{{ featured_event.title }}</h2>
+                        <p class="text-bhi-green fw-bold mb-3">
+                            <i class="bi bi-calendar-check me-2"></i> {{ featured_event.date_time|date:"l, F d, Y @ h:i A" }}
+                        </p>
+                        <p class="text-muted"><i class="bi bi-geo-alt me-2"></i> {{ featured_event.location }}</p>
+                        <p class="card-text">{{ featured_event.description }}</p>
+                        <a href="{% url 'volunteer' %}" class="btn btn-danger rounded-pill px-4">Register to Attend</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Event List -->
+        <h3 class="fw-bold mb-4">Event Calendar</h3>
+        <div class="row g-4">
+            {% for event in events %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="position-relative">
+                        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}" style="height: 200px; object-fit: cover;">
+                        <div class="position-absolute bottom-0 start-0 bg-white p-2 m-3 rounded text-center shadow-sm" style="min-width: 60px;">
+                            <span class="d-block fw-bold fs-4 lh-1">{{ event.date_time|date:"d" }}</span>
+                            <span class="d-block small text-uppercase text-muted">{{ event.date_time|date:"M" }}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ event.title }}</h5>
+                        <p class="small text-muted mb-2"><i class="bi bi-geo-alt"></i> {{ event.location }}</p>
+                        <p class="card-text text-secondary">{{ event.description|truncatewords:20 }}</p>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ event.date_time|date:"h:i A" }}</small>
+                            <a href="{% url 'contact' %}" class="btn btn-sm btn-outline-success">Inquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

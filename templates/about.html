@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us | Better Homes Initiative{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<header class="py-5 bg-light text-center">
+    <div class="container">
+        <h1 class="fw-bold text-bhi-green">About Us</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">About</li>
+            </ol>
+        </nav>
+    </div>
+</header>
+
+<!-- Mission & Vision -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-md-6">
+                <div class="card h-100 bg-white border-0 shadow-sm p-4 border-start border-5 border-success">
+                    <div class="card-body">
+                        <div class="icon-square bg-light text-bhi-green p-3 rounded-circle d-inline-block mb-3">
+                            <i class="bi bi-flag-fill fs-3"></i>
+                        </div>
+                        <h3 class="card-title fw-bold mb-3">Our Mission</h3>
+                        <p class="card-text lead fs-6">
+                            To build the lives of vulnerable individuals by providing compassionate visits, empowering resources, and a strong support network that enables them to overcome adversity and thrive.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 bg-white border-0 shadow-sm p-4 border-start border-5 border-danger">
+                    <div class="card-body">
+                        <div class="icon-square bg-light text-bhi-red p-3 rounded-circle d-inline-block mb-3">
+                            <i class="bi bi-eye-fill fs-3"></i>
+                        </div>
+                        <h3 class="card-title fw-bold mb-3">Our Vision</h3>
+                        <p class="card-text lead fs-6">
+                            To create a society where every vulnerable person is embraced with hope, compassion, and empowerment needed to build a brighter future.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Story/Values -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 order-lg-2">
+                <img src="{% static 'images/land.jpg' %}" alt="BHI Team" class="img-fluid rounded-4 shadow-sm">
+            </div>
+            <div class="col-lg-7 order-lg-1 pe-lg-5">
+                <h6 class="text-bhi-red fw-bold text-uppercase">Our Story</h6>
+                <h2 class="mb-4">From "My Little" to "Our Big Impact"</h2>
+                <p>
+                    Founded on the belief that small acts of kindness accumulate to create massive change, the Better Homes Initiative (BHI) started as a grassroots movement. We identified critical gaps in education for children with special needs and healthcare for the elderly in rural Kenya.
+                </p>
+                <p>
+                    Today, we work across multiple regions, renovating schools like Chepsogot School for the Blind and delivering sanitation essentials to homes in Kamariny.
+                </p>
+                
+                <h5 class="fw-bold mt-4 mb-3">Our Core Values</h5>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-heart-fill text-bhi-red me-3"></i>
+                            <span>Compassion</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-people-fill text-bhi-green me-3"></i>
+                            <span>Community</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-lightbulb-fill text-warning me-3"></i>
+                            <span>Empowerment</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-tree-fill text-success me-3"></i>
+                            <span>Sustainability</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Our Team</h2>
+            <p class="text-muted">The people behind the movement.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% for member in team_members %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card text-center h-100 border-0">
+                    <img src="{{ member.photo.url }}" class="rounded-circle mx-auto mb-3" width="150" height="150" style="object-fit: cover;" alt="{{ member.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ member.name }}</h5>
+                        <p class="card-text text-muted small">{{ member.role }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

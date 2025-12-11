@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Volunteer | Better Homes Initiative{% endblock %}
+
+{% block content %}
+<header class="py-5 text-center text-white" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static 'images/volunteer_bg.jpg' %}') center/cover;">
+    <div class="container">
+        <h1 class="fw-bold display-4">Become a Volunteer</h1>
+        <p class="lead">Join our family and make a tangible difference in the field.</p>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h2 class="fw-bold text-bhi-green mb-4">Why Volunteer With Us?</h2>
+                <p class="lead mb-4">Volunteering is at the heart of "My Little, Your Little".</p>
+                
+                <div class="d-flex mb-4">
+                    <div class="me-3">
+                        <div class="bg-light p-3 rounded text-bhi-red"><i class="bi bi-emoji-smile-fill fs-3"></i></div>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold">Personal Growth</h5>
+                        <p class="text-muted">Develop new skills, leadership qualities, and gain a broader perspective of the world.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="me-3">
+                        <div class="bg-light p-3 rounded text-bhi-red"><i class="bi bi-people-fill fs-3"></i></div>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold">Community Impact</h5>
+                        <p class="text-muted">Directly contribute to projects in education, healthcare, and environmental conservation.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-success mt-4">
+                    <strong>Requirements:</strong>
+                    <ul class="mb-0 ps-3 mt-2">
+                        <li>Passion for community service</li>
+                        <li>Availability for field visits (Weekends/Holidays)</li>
+                        <li>Willingness to work in a team</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow rounded-4 p-4">
+                    <h3 class="fw-bold mb-4">Volunteer Application</h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger">Please correct the errors below.</div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Full Name</label>
+                            {{ form.full_name }} <!-- Assumes Django widget has class="form-control" -->
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email</label>
+                            {{ form.email }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Phone Number</label>
+                            {{ form.phone }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Area of Interest</label>
+                            {{ form.interest }} <!-- Select widget -->
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Why do you want to join?</label>
+                            {{ form.message }} <!-- Textarea widget -->
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 btn-lg rounded-pill fw-bold">Submit Application</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

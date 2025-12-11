@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} | Projects{% endblock %}
+
+{% block content %}
+<!-- Header Image -->
+<div class="position-relative" style="height: 50vh; min-height: 400px;">
+    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="w-100 h-100" style="object-fit: cover; filter: brightness(0.6);">
+    <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3">
+        <span class="badge bg-bhi-green mb-3">{{ project.category|upper }}</span>
+        <h1 class="display-4 fw-bold text-white">{{ project.title }}</h1>
+        <p class="lead text-white-50">{{ project.location }}</p>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <article>
+                    <div class="d-flex justify-content-between align-items-center mb-4 text-muted border-bottom pb-3">
+                        <span><i class="bi bi-calendar me-2"></i> {{ project.date_completed }}</span>
+                        <span><i class="bi bi-geo-alt me-2"></i> {{ project.location }}</span>
+                    </div>
+                    
+                    <div class="fs-5 lh-lg text-secondary mb-5">
+                        {{ project.description|linebreaks }}
+                    </div>
+
+                    <!-- Impact Gallery Snippet -->
+                    {% if project.gallery_images.all %}
+                    <h4 class="fw-bold mb-3">Project Gallery</h4>
+                    <div class="row g-2 mb-5">
+                        {% for img in project.gallery_images.all %}
+                        <div class="col-md-4 col-6">
+                            <img src="{{ img.image.url }}" class="img-fluid rounded" alt="Gallery">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </article>
+
+                <!-- CTA -->
+                <div class="card bg-light border-0 rounded-4 p-4 text-center mt-5">
+                    <div class="card-body">
+                        <h3 class="fw-bold">Help us do more</h3>
+                        <p class="text-muted">Projects like {{ project.title }} are only possible through your generosity.</p>
+                        <a href="{% url 'donate' %}" class="btn btn-danger btn-lg rounded-pill px-5">Donate to this Cause</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Projects -->
+<section class="py-5 bg-white border-top">
+    <div class="container">
+        <h3 class="fw-bold mb-4">Related Projects</h3>
+        <div class="row g-4">
+            {% for related in related_projects %}
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <img src="{{ related.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="fw-bold">{{ related.title }}</h5>
+                        <a href="{% url 'project_detail' related.id %}" class="stretched-link text-success text-decoration-none">View Project</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

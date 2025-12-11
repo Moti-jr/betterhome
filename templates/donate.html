@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donate | Better Homes Initiative{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-bhi-red text-white text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Support Our Cause</h1>
+        <p class="lead">Your contribution directly impacts lives in underserved communities.</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Payment Methods -->
+            <div class="col-lg-6">
+                <h3 class="fw-bold text-bhi-green mb-4">Ways to Give</h3>
+                
+                <!-- M-Pesa Card -->
+                <div class="card mb-4 border-success border-2 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{% static 'images/saf.jpg' %}" alt="M-Pesa" height="40" class="me-3">
+                            <h4 class="mb-0 fw-bold">M-Pesa Paybill</h4>
+                        </div>
+                        <p class="mb-1"><strong>Paybill Number:</strong> <span class="fs-5 text-dark font-monospace">522533</span></p>
+                        <p class="mb-0"><strong>Account Name:</strong> Better Homes Initiative</p>
+                    </div>
+                </div>
+
+                <!-- PayPal/Bank Card -->
+                <div class="card mb-4 border-primary border-2 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-paypal fs-2 text-primary me-3"></i>
+                            <h4 class="mb-0 fw-bold">International / PayPal</h4>
+                        </div>
+                        <p>For international donors, please use the button below to donate via PayPal or Credit Card.</p>
+                        <a href="#" class="btn btn-primary rounded-pill"><i class="bi bi-paypal"></i> Donate via PayPal</a>
+                    </div>
+                </div>
+                
+                <h4 class="fw-bold mt-5 mb-3">Why Donate?</h4>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-transparent"><i class="bi bi-check-lg text-success me-2"></i> $20 provides school supplies for a child.</li>
+                    <li class="list-group-item bg-transparent"><i class="bi bi-check-lg text-success me-2"></i> $50 feeds a family for a month.</li>
+                    <li class="list-group-item bg-transparent"><i class="bi bi-check-lg text-success me-2"></i> $100 contributes to school renovations.</li>
+                </ul>
+            </div>
+
+            <!-- Donation Form -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow p-4 bg-light">
+                    <h3 class="fw-bold mb-4">Donation Pledge</h3>
+                    <p class="text-muted small">Fill out this form to pledge a donation or notify us of a transfer.</p>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-danger w-100 btn-lg rounded-pill fw-bold mt-3">Confirm Donation</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-white">
+    <div class="container text-center">
+        <h3 class="fw-bold mb-5">Voices of Impact</h3>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="card-body">
+                        <p class="fst-italic text-secondary">"The support from BHI changed my life. I can now attend school comfortably."</p>
+                        <h6 class="fw-bold text-bhi-green">- Student, Chepsogot School</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="card-body">
+                        <p class="fst-italic text-secondary">"Seeing the smiles on the elderly when they receive supplies is priceless."</p>
+                        <h6 class="fw-bold text-bhi-green">- Volunteer, Kamariny</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="card-body">
+                        <p class="fst-italic text-secondary">"A truly transparent and dedicated organization."</p>
+                        <h6 class="fw-bold text-bhi-green">- Community Leader</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

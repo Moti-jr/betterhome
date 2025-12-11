@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="position-relative py-5 bg-bhi-green text-white overflow-hidden" style="background: linear-gradient(rgba(0,158,73,0.9), rgba(0,158,73,0.8)), url('{% static 'images/hero_bg.jpg' %}') center/cover no-repeat;">
+    <div class="container py-5">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-7">
+                <h1 class="display-3 fw-bold mb-4">"My Little, Your Little"</h1>
+                <p class="lead mb-5 fs-4">Together we can change the world. Join us in uplifting underserved communities through education, healthcare, and love.</p>
+                <div class="d-flex gap-3 flex-column flex-sm-row">
+                    <a href="{% url 'donate' %}" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow">Donate Now</a>
+                    <a href="{% url 'volunteer' %}" class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold">Volunteer</a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <img src="{% static 'images/land2.jpg' %}" alt="BHI Hands Icon" class="img-fluid opacity-75" style="max-height: 400px;">
+            </div>
+        </div>
+    </div>
+    <!-- Wave Separator -->
+    <div class="position-absolute bottom-0 start-0 w-100 overflow-hidden" style="line-height: 0;">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="position: relative; display: block; width: calc(100% + 1.3px); height: 60px;">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#ffffff"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Impact Counters -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-bhi-green">5+</h2>
+                <p class="text-muted">Schools Renovated</p>
+            </div>
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-bhi-green">100+</h2>
+                <p class="text-muted">Families Supported</p>
+            </div>
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-bhi-green">50+</h2>
+                <p class="text-muted">Scholarships</p>
+            </div>
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-bhi-green">3</h2>
+                <p class="text-muted">Regions Impacted</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Snippet -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img src="{% static 'images/land.jpg' %}" alt="Community Work" class="img-fluid rounded-4 shadow">
+            </div>
+            <div class="col-lg-6 ps-lg-5">
+                <h6 class="text-bhi-red fw-bold text-uppercase ls-1">Who We Are</h6>
+                <h2 class="mb-4">Dedicated to Uplifting Lives</h2>
+                <p class="text-secondary mb-4">
+                    The Better Homes Initiative is a charity organization dedicated to uplifting underserved communities through education, healthcare, and disaster relief. Focused on creating lasting change, the initiative empowers individuals and fosters sustainable development.
+                </p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-bhi-green me-2"></i> Quality Education Access</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-bhi-green me-2"></i> Healthcare & Sanitation</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-bhi-green me-2"></i> Environmental Conservation</li>
+                </ul>
+                <a href="{% url 'about' %}" class="btn btn-outline-success rounded-pill px-4">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Projects -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h6 class="text-bhi-red fw-bold text-uppercase">Our Impact</h6>
+            <h2 class="fw-bold">Recent Projects</h2>
+        </div>
+        
+        <div class="row g-4">
+            {% for project in featured_projects %}
+            <div class="col-md-4">
+                <div class="card h-100 rounded-3 overflow-hidden">
+                    <div class="position-relative">
+                        <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title }}" style="height: 250px; object-fit: cover;">
+                        <span class="badge bg-bhi-red position-absolute top-0 end-0 m-3">{{ project.category }}</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ project.title }}</h5>
+                        <p class="card-text text-muted">{{ project.short_description|truncatechars:100 }}</p>
+                        <a href="{% url 'project_detail' project.id %}" class="text-bhi-green text-decoration-none fw-bold stretched-link">
+                            Read More <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No featured projects at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'projects' %}" class="btn btn-primary rounded-pill px-4">View All Projects</a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 bg-bhi-dark text-white text-center">
+    <div class="container py-4">
+        <h2 class="fw-bold mb-3">Ready to Make a Difference?</h2>
+        <p class="lead mb-4 text-white-50">Your little contribution can change an entire community's future.</p>
+        <a href="{% url 'donate' %}" class="btn btn-danger btn-lg rounded-pill px-5 shadow">Donate Today</a>
+    </div>
+</section>
+{% endblock %}

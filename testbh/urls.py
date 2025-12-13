@@ -14,10 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
 from betterhome import views
+from testbh import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,5 +34,8 @@ urlpatterns = [
     path('gallery', views.gallery, name='gallery'),
     path('volunteer', views.volunteer, name='volunteer'),
     path('blog_detail', views.blog_detail, name='blog_detail'),
-    path('project_detail', views.project_detail, name='project_detail'),
+    path('projects/<slug:slug>/', views.project_detail, name='project_detail'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

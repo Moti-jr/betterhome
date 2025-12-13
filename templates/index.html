@@ -94,7 +94,7 @@
                     <div class="card-body">
                         <h5 class="card-title fw-bold">{{ project.title }}</h5>
                         <p class="card-text text-muted">{{ project.short_description|truncatechars:100 }}</p>
-                        <a href="{% url 'project_detail' project.id %}" class="text-bhi-green text-decoration-none fw-bold stretched-link">
+                        <a href="{% url 'project_detail' project.slug %}" class="text-bhi-green text-decoration-none fw-bold stretched-link">
                             Read More <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -114,10 +114,10 @@
 </section>
 
 <!-- CTA -->
-<section class="py-5 bg-bhi-dark text-white text-center">
+<section class="py-3 bg-bhi-dark text-black text-center">
     <div class="container py-4">
-        <h2 class="fw-bold mb-3">Ready to Make a Difference?</h2>
-        <p class="lead mb-4 text-white-50">Your little contribution can change an entire community's future.</p>
+        <h2 class="fw-bold mb-4">Ready to Make a Difference?</h2>
+        <p class="lead mb-2 text-black-50">Your little contribution can change an entire community's future.</p>
         <a href="{% url 'donate' %}" class="btn btn-danger btn-lg rounded-pill px-5 shadow">Donate Today</a>
     </div>
 </section>

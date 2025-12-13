@@ -5,20 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Better Homes Initiative | Together We Can Change The World{% endblock %}</title>
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap"
+          rel="stylesheet">
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         :root {
             --bhi-green: #009e49; /* Matching PDF green */
-            --bhi-red: #ed1c24;   /* Matching PDF red */
+            --bhi-red: #ed1c24; /* Matching PDF red */
             --bhi-dark: #2c3e50;
         }
 
@@ -34,15 +35,27 @@
         }
 
         /* Branding Colors */
-        .text-bhi-green { color: var(--bhi-green) !important; }
-        .text-bhi-red { color: var(--bhi-red) !important; }
-        .bg-bhi-green { background-color: var(--bhi-green) !important; }
-        .bg-bhi-red { background-color: var(--bhi-red) !important; }
+        .text-bhi-green {
+            color: var(--bhi-green) !important;
+        }
+
+        .text-bhi-red {
+            color: var(--bhi-red) !important;
+        }
+
+        .bg-bhi-green {
+            background-color: var(--bhi-green) !important;
+        }
+
+        .bg-bhi-red {
+            background-color: var(--bhi-red) !important;
+        }
 
         .btn-primary {
             background-color: var(--bhi-green);
             border-color: var(--bhi-green);
         }
+
         .btn-primary:hover {
             background-color: #007a38;
             border-color: #007a38;
@@ -58,6 +71,7 @@
             font-weight: 600;
             color: #444;
         }
+
         .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
             color: var(--bhi-green);
         }
@@ -65,13 +79,14 @@
         /* Card lifts */
         .card {
             border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
         }
+
         .card:hover {
             transform: translateY(-5px);
         }
-        
+
         /* Form Styling */
         .form-control:focus {
             border-color: var(--bhi-green);
@@ -82,28 +97,28 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    {% include 'includes/navbar.html' %}
+{% include 'includes/navbar.html' %}
 
-    <main class="flex-grow-1">
-        {% if messages %}
-            <div class="container mt-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+<main class="flex-grow-1">
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-        {% block content %}{% endblock %}
-    </main>
+    {% block content %}{% endblock %}
+</main>
 
-    {% include 'includes/footer.html' %}
+{% include 'includes/footer.html' %}
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    {% block extra_js %}{% endblock %}
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.shortcuts import render
 
-from betterhome.models import Project, ProjectCategory, Blog, Event
+from betterhome.models import Project, ProjectCategory, Blog, Event, TeamMember, TeamDepartment
 
 
 def home(request):
@@ -138,9 +138,53 @@ def volunteer(request):
 
 
 def about(request):
-    return render(request, 'about.html')
+    """About page with team members"""
+    team_members = TeamMember.objects.filter(
+        is_active=True,
+        show_on_homepage=True
+    )
+
+    departments = TeamDepartment.objects.filter(
+        is_active=True
+    ).prefetch_related('members')
+
+    context = {
+        'team_members': team_members,
+        'departments': departments,
+    }
+    return render(request, 'about.html', context)
 
 
+def team(request):
+    """Full team page"""
+    department_slug = request.GET.get('department')
+
+    if department_slug:
+        department = get_object_or_404(TeamDepartment, slug=department_slug, is_active=True)
+        team_members = department.members.filter(is_active=True)
+        current_department = department
+    else:
+        team_members = TeamMember.objects.filter(is_active=True)
+        current_department = None
+
+    departments = TeamDepartment.objects.filter(is_active=True)
+
+    context = {
+        'team_members': team_members,
+        'departments': departments,
+        'current_department': current_department,
+    }
+    return render(request, 'team.html', context)
+
+
+def team_member_detail(request, slug):
+    """Single team member detail page"""
+    member = get_object_or_404(TeamMember, slug=slug, is_active=True)
+
+    context = {
+        'member': member,
+    }
+    return render(request, 'team_member_detail.html', context)
 def newsletter_signup(request):
     return render(request, 'index.html')
 

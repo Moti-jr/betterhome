@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ member.name }} | Our Team{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<header class="py-5 bg-bhi-green text-white">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb text-white">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'team' %}" class="text-white">Team</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ member.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Left Column - Photo & Quick Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top" style="top: 100px;">
+                    <div class="card-body p-4 text-center">
+                        <!-- Photo -->
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" 
+                             class="rounded-circle shadow mb-4" 
+                             width="200" 
+                             height="200" 
+                             style="object-fit: cover;" 
+                             alt="{{ member.name }}">
+                        {% else %}
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto shadow mb-4" 
+                             style="width: 200px; height: 200px;">
+                            <i class="bi bi-person-circle" style="font-size: 100px; color: #ccc;"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Name & Role -->
+                        <h3 class="fw-bold mb-2">{{ member.name }}</h3>
+                        <p class="text-bhi-green fw-semibold mb-3">{{ member.role }}</p>
+                        
+                        <!-- Quick Info -->
+                        <div class="text-start mb-4">
+                            {% if member.age %}
+                            <p class="mb-2">
+                                <i class="bi bi-calendar3 text-bhi-green me-2"></i>
+                                <strong>Age:</strong> {{ member.age }} years
+                            </p>
+                            {% endif %}
+                            
+                            {% if member.gender %}
+                            <p class="mb-2">
+                                <i class="bi bi-gender-ambiguous text-bhi-green me-2"></i>
+                                <strong>Gender:</strong> {{ member.get_gender_display }}
+                            </p>
+                            {% endif %}
+                            
+                            {% if member.joined_date %}
+                            <p class="mb-2">
+                                <i class="bi bi-briefcase text-bhi-green me-2"></i>
+                                <strong>Joined:</strong> {{ member.joined_date|date:"M Y" }}
+                            </p>
+                            {% endif %}
+                            
+                            {% if member.email %}
+                            <p class="mb-2">
+                                <i class="bi bi-envelope text-bhi-green me-2"></i>
+                                <strong>Email:</strong><br>
+                                <a href="mailto:{{ member.email }}" class="text-decoration-none">{{ member.email }}</a>
+                            </p>
+                            {% endif %}
+                            
+                            {% if member.phone %}
+                            <p class="mb-2">
+                                <i class="bi bi-telephone text-bhi-green me-2"></i>
+                                <strong>Phone:</strong><br>
+                                <a href="tel:{{ member.phone }}" class="text-decoration-none">{{ member.phone }}</a>
+                            </p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Social Media Links -->
+                        {% if member.has_social_links %}
+                        <div class="d-flex justify-content-center gap-3 mb-3">
+                            {% if member.linkedin %}
+                            <a href="{{ member.linkedin }}" target="_blank" class="btn btn-outline-success rounded-circle" title="LinkedIn">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.twitter %}
+                            <a href="{{ member.twitter }}" target="_blank" class="btn btn-outline-success rounded-circle" title="Twitter">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.facebook %}
+                            <a href="{{ member.facebook }}" target="_blank" class="btn btn-outline-success rounded-circle" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.instagram %}
+                            <a href="{{ member.instagram }}" target="_blank" class="btn btn-outline-success rounded-circle" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Back to Team Button -->
+                        <a href="{% url 'team' %}" class="btn btn-success rounded-pill px-4 w-100">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Team
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Detailed Information -->
+            <div class="col-lg-8">
+                <!-- Biography Section -->
+                {% if member.bio %}
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3 text-bhi-green">
+                            <i class="bi bi-person-lines-fill me-2"></i>About
+                        </h4>
+                        <p class="text-muted" style="white-space: pre-line;">{{ member.bio }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Role & Responsibilities -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3 text-bhi-green">
+                            <i class="bi bi-briefcase-fill me-2"></i>Role & Responsibilities
+                        </h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <h6 class="fw-bold mb-2">Position</h6>
+                                    <p class="mb-0 text-muted">{{ member.role }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <h6 class="fw-bold mb-2">Category</h6>
+                                    <p class="mb-0 text-muted">{{ member.get_role_category_display }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Departments -->
+                {% if member.departments.all %}
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3 text-bhi-green">
+                            <i class="bi bi-diagram-3-fill me-2"></i>Departments
+                        </h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for department in member.departments.all %}
+                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                {% if department.icon %}<i class="bi {{ department.icon }} me-1"></i>{% endif %}
+                                {{ department.name }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Contact Information -->
+                {% if member.address or member.email or member.phone %}
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3 text-bhi-green">
+                            <i class="bi bi-geo-alt-fill me-2"></i>Contact Information
+                        </h4>
+                        
+                        {% if member.address %}
+                        <div class="mb-3">
+                            <h6 class="fw-bold mb-2">Address</h6>
+                            <p class="text-muted mb-0" style="white-space: pre-line;">{{ member.address }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            {% if member.email %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="fw-bold mb-2">Email</h6>
+                                <a href="mailto:{{ member.email }}" class="text-decoration-none">
+                                    <i class="bi bi-envelope me-2"></i>{{ member.email }}
+                                </a>
+                            </div>
+                            {% endif %}
+                            
+                            {% if member.phone %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="fw-bold mb-2">Phone</h6>
+                                <a href="tel:{{ member.phone }}" class="text-decoration-none">
+                                    <i class="bi bi-telephone me-2"></i>{{ member.phone }}
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Call to Action -->
+                <div class="card border-0 bg-bhi-green text-white rounded-4">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="fw-bold mb-3">Want to Connect?</h5>
+                        <p class="mb-4">Feel free to reach out for collaborations or inquiries.</p>
+                        {% if member.email %}
+                        <a href="mailto:{{ member.email }}" class="btn btn-light text-bhi-green rounded-pill px-4">
+                            <i class="bi bi-envelope-fill me-2"></i>Send Email
+                        </a>
+                        {% else %}
+                        <a href="{% url 'contact' %}" class="btn btn-light text-bhi-green rounded-pill px-4">
+                            <i class="bi bi-chat-dots-fill me-2"></i>Contact Us
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+.breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.btn-outline-success.rounded-circle {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.btn-outline-success.rounded-circle:hover {
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

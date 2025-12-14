@@ -36,6 +36,8 @@ urlpatterns = [
     path('blog_detail', views.blog_detail, name='blog_detail'),
     path('projects/<slug:slug>/', views.project_detail, name='project_detail'),
     path('blogs/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('team/', views.team, name='team'),
+    path('team/<slug:slug>/', views.team_member_detail, name='team_member_detail'),
 
 ]
 if settings.DEBUG:

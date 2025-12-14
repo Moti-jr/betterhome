@@ -1,9 +1,165 @@
-# admin.py
+from .models import ProjectCategory, Project, ProjectImage, ProjectUpdate, ProjectPartner, Event, Blog
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import ProjectCategory, Project, ProjectImage, ProjectUpdate, ProjectPartner, Event, Blog
+from .models import TeamMember, TeamDepartment
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = [
+        'photo_preview',
+        'name',
+        'role',
+        'age_display',
+        'national_id_status_display',
+        'is_active',
+        'show_on_homepage',
+        'display_order',
+    ]
+    list_filter = [
+        'is_active',
+        'show_on_homepage',
+        'role_category',
+        'gender',
+        'national_id_verified',
+        'joined_date'
+    ]
+    search_fields = ['name', 'role', 'bio', 'email', 'national_id']
+    prepopulated_fields = {'slug': ('name',)}
+    readonly_fields = ['photo_preview', 'age_display', 'created_at', 'updated_at']
+
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'slug', 'role', 'role_category')
+        }),
+        ('Personal Information', {
+            'fields': ('date_of_birth', 'age_display', 'gender'),
+            'description': 'Date of birth is used to calculate age and determine if National ID is required.'
+        }),
+        ('National ID (Required for 18+ years)', {
+            'fields': ('national_id', 'national_id_verified'),
+            'description': 'National ID is mandatory for members 18 years and above.',
+            'classes': ('collapse',)
+        }),
+        ('Photo', {
+            'fields': ('photo', 'photo_preview')
+        }),
+        ('Biography', {
+            'fields': ('bio',)
+        }),
+        ('Contact Information', {
+            'fields': ('email', 'phone', 'address'),
+            'classes': ('collapse',)
+        }),
+        ('Social Media', {
+            'fields': ('linkedin', 'twitter', 'facebook', 'instagram'),
+            'classes': ('collapse',)
+        }),
+        ('Display Options', {
+            'fields': ('is_active', 'show_on_homepage', 'display_order', 'joined_date')
+        }),
+        ('Metadata', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def photo_preview(self, obj):
+        if obj.photo:
+            return format_html(
+                '<img src="{}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;"/>',
+                obj.photo.url
+            )
+        return "-"
+
+    photo_preview.short_description = 'Photo Preview'
+
+    def age_display(self, obj):
+        age = obj.age
+        if age is not None:
+            color = "green" if age >= 18 else "orange"
+            return format_html(
+                '<span style="color: {}; font-weight: bold;">{} years</span>',
+                color, age
+            )
+        return "-"
+
+    age_display.short_description = 'Age'
+
+    def national_id_status_display(self, obj):
+        status = obj.national_id_status
+        colors = {
+            'Verified': 'green',
+            'Unverified': 'orange',
+            'Missing': 'red',
+            'Not Required': 'gray'
+        }
+        icons = {
+            'Verified': '✓',
+            'Unverified': '⚠',
+            'Missing': '✗',
+            'Not Required': '-'
+        }
+        return format_html(
+            '<span style="color: {}; font-weight: bold;">{} {}</span>',
+            colors.get(status, 'black'),
+            icons.get(status, ''),
+            status
+        )
+
+    national_id_status_display.short_description = 'ID Status'
+
+    actions = [
+        'make_active',
+        'make_inactive',
+        'show_on_homepage',
+        'hide_from_homepage',
+        'verify_national_id',
+        'unverify_national_id'
+    ]
+
+    def make_active(self, request, queryset):
+        queryset.update(is_active=True)
+
+    make_active.short_description = "Mark as active"
+
+    def make_inactive(self, request, queryset):
+        queryset.update(is_active=False)
+
+    make_inactive.short_description = "Mark as inactive"
+
+    def show_on_homepage(self, request, queryset):
+        queryset.update(show_on_homepage=True)
+
+    show_on_homepage.short_description = "Show on homepage"
+
+    def hide_from_homepage(self, request, queryset):
+        queryset.update(show_on_homepage=False)
+
+    hide_from_homepage.short_description = "Hide from homepage"
+
+    def verify_national_id(self, request, queryset):
+        queryset.update(national_id_verified=True)
+
+    verify_national_id.short_description = "Mark National ID as verified"
+
+    def unverify_national_id(self, request, queryset):
+        queryset.update(national_id_verified=False)
+
+    unverify_national_id.short_description = "Mark National ID as unverified"
 
 
+@admin.register(TeamDepartment)
+class TeamDepartmentAdmin(admin.ModelAdmin):
+    list_display = ['name', 'member_count', 'display_order', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'description']
+    prepopulated_fields = {'slug': ('name',)}
+    filter_horizontal = ['members']
+
+    def member_count(self, obj):
+        return obj.member_count
+
+    member_count.short_description = 'Members'
 @admin.register(ProjectCategory)
 class ProjectCategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'project_count', 'created_at']

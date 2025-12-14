@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Team | Better Homes Initiative{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<header class="py-5 bg-bhi-green text-white text-center">
+    <div class="container">
+        <h1 class="fw-bold">Our Team</h1>
+        <p class="lead">Meet the dedicated people behind the movement.</p>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Department Filter -->
+        {% if departments %}
+        <div class="d-flex justify-content-center mb-5 flex-wrap gap-2">
+            <!-- All -->
+            <a href="{% url 'team' %}"
+               class="btn {% if not current_department %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">
+                All Team
+            </a>
+
+            <!-- Dynamic Departments -->
+            {% for department in departments %}
+                <a href="?department={{ department.slug }}"
+                   class="btn {% if current_department.slug == department.slug %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">
+                    {% if department.icon %}<i class="bi {{ department.icon }} me-1"></i>{% endif %}
+                    {{ department.name }}
+                </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Department Description -->
+        {% if current_department %}
+        <div class="text-center mb-5">
+            <h3 class="fw-bold text-bhi-green">{{ current_department.name }}</h3>
+            {% if current_department.description %}
+            <p class="text-muted">{{ current_department.description }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Team Members Grid -->
+        <div class="row g-4">
+            {% for member in team_members %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden team-card">
+                    <div class="card-body text-center p-4">
+                        <!-- Photo -->
+                        <div class="position-relative mb-3 d-inline-block">
+                            {% if member.photo %}
+                            <img src="{{ member.photo.url }}" 
+                                 class="rounded-circle shadow" 
+                                 width="150" 
+                                 height="150" 
+                                 style="object-fit: cover;" 
+                                 alt="{{ member.name }}">
+                            {% else %}
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow" 
+                                 style="width: 150px; height: 150px;">
+                                <i class="bi bi-person-circle" style="font-size: 80px; color: #ccc;"></i>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Status Badge -->
+                            {% if member.is_active %}
+                            <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-success" style="right: 10px;">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Name & Role -->
+                        <h5 class="card-title fw-bold mb-1">{{ member.name }}</h5>
+                        <p class="text-bhi-green small fw-semibold mb-2">{{ member.role }}</p>
+                        
+                        <!-- Age (Optional) -->
+                        {% if member.age %}
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-calendar3 me-1"></i>{{ member.age }} years
+                        </p>
+                        {% endif %}
+                        
+                        <!-- Bio Preview -->
+                        {% if member.bio %}
+                        <p class="card-text text-muted small mb-3">{{ member.bio|truncatewords:15 }}</p>
+                        {% endif %}
+                        
+                        <!-- Social Links -->
+                        {% if member.has_social_links %}
+                        <div class="social-links mb-3">
+                            {% if member.linkedin %}
+                            <a href="{{ member.linkedin }}" target="_blank" class="text-muted me-2" title="LinkedIn">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.twitter %}
+                            <a href="{{ member.twitter }}" target="_blank" class="text-muted me-2" title="Twitter">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.facebook %}
+                            <a href="{{ member.facebook }}" target="_blank" class="text-muted me-2" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.instagram %}
+                            <a href="{{ member.instagram }}" target="_blank" class="text-muted" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- View Profile Button -->
+                        <a href="{% url 'team_member_detail' member.slug %}" 
+                           class="btn btn-outline-success rounded-pill btn-sm px-4">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-people display-1 text-muted mb-3"></i>
+                <h3 class="text-muted">No team members found.</h3>
+                {% if current_department %}
+                <p class="text-muted">Try selecting a different department.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+.team-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.social-links a {
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.social-links a:hover {
+    color: var(--bhi-green) !important;
+    transform: scale(1.2);
+}
+</style>
+{% endblock %}

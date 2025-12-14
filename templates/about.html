@@ -101,25 +101,94 @@
 </section>
 
 <!-- Team Section -->
+<!-- templates/about.html or wherever you want to display the team -->
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Our Team</h2>
-            <p class="text-muted">The people behind the movement.</p>
+            <h6 class="text-bhi-red fw-bold text-uppercase">Meet Our Team</h6>
+            <h2 class="fw-bold">The People Behind the Movement</h2>
+            <p class="text-muted">Dedicated individuals working to make a difference</p>
         </div>
+        
         <div class="row g-4 justify-content-center">
             {% for member in team_members %}
-            <div class="col-md-3 col-sm-6">
-                <div class="card text-center h-100 border-0">
-                    <img src="{{ member.photo.url }}" class="rounded-circle mx-auto mb-3" width="150" height="150" style="object-fit: cover;" alt="{{ member.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">{{ member.name }}</h5>
-                        <p class="card-text text-muted small">{{ member.role }}</p>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card text-center h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" 
+                             class="rounded-circle mx-auto mb-3 shadow" 
+                             width="150" 
+                             height="150" 
+                             style="object-fit: cover;" 
+                             alt="{{ member.name }}">
+                        {% else %}
+                        <div class="rounded-circle mx-auto mb-3 bg-light d-flex align-items-center justify-content-center" 
+                             style="width: 150px; height: 150px;">
+                            <i class="bi bi-person-circle" style="font-size: 80px; color: #ccc;"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <h5 class="card-title fw-bold mb-1">{{ member.name }}</h5>
+                        <p class="card-text text-bhi-green small fw-semibold mb-2">{{ member.role }}</p>
+                        
+                        {% if member.bio %}
+                        <p class="card-text text-muted small">{{ member.bio|truncatewords:15 }}</p>
+                        {% endif %}
+                        
+                        {% if member.has_social_links %}
+                        <div class="social-links mt-3">
+                            {% if member.linkedin %}
+                            <a href="{{ member.linkedin }}" target="_blank" class="text-muted me-2">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.twitter %}
+                            <a href="{{ member.twitter }}" target="_blank" class="text-muted me-2">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.facebook %}
+                            <a href="{{ member.facebook }}" target="_blank" class="text-muted me-2">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            {% endif %}
+                            {% if member.instagram %}
+                            <a href="{{ member.instagram }}" target="_blank" class="text-muted">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">No team members to display.</p>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
+
+<style>
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.social-links a {
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--bhi-green) !important;
+}
+</style>
 {% endblock %}

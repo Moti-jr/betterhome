@@ -14,12 +14,35 @@
 <section class="py-5">
     <div class="container">
         <!-- Category Filter (Static Pills) -->
-        <div class="d-flex justify-content-center mb-5 flex-wrap gap-2">
+        <!-- <div class="d-flex justify-content-center mb-5 flex-wrap gap-2">
             <a href="?category=all" class="btn {% if not request.GET.category or request.GET.category == 'all' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">All</a>
             <a href="?category=education" class="btn {% if request.GET.category == 'education' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">Education</a>
             <a href="?category=healthcare" class="btn {% if request.GET.category == 'healthcare' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">Healthcare</a>
             <a href="?category=environment" class="btn {% if request.GET.category == 'environment' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">Environment</a>
+            <a href="?category=community" class="btn {% if request.GET.category == 'community' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">Community</a>
+        </div> -->
+        <div class="d-flex justify-content-center mb-5 flex-wrap gap-2">
+
+            <!-- All -->
+            <a href="?category=all"
+            class="btn {% if not selected_category or selected_category == 'all' %}
+            btn-success{% else %}btn-outline-success{% endif %}
+            rounded-pill px-4">
+                All
+            </a>
+
+            <!-- Dynamic Categories -->
+            {% for category in categories %}
+                <a href="?category={{ category.slug }}"
+                class="btn {% if selected_category == category.slug %}
+                btn-success{% else %}btn-outline-success{% endif %}
+                rounded-pill px-4">
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+
         </div>
+
 
         <div class="row g-4">
             {% for project in projects %}

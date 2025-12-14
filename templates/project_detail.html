@@ -20,12 +20,12 @@
             <div class="col-lg-8 mx-auto">
                 <article>
                     <div class="d-flex justify-content-between align-items-center mb-4 text-muted border-bottom pb-3">
-                        <span><i class="bi bi-calendar me-2"></i> {{ project.date_completed }}</span>
+                        <span><i class="bi bi-calendar me-2"></i> {{ project.end_date }}</span>
                         <span><i class="bi bi-geo-alt me-2"></i> {{ project.location }}</span>
                     </div>
                     
                     <div class="fs-5 lh-lg text-secondary mb-5">
-                        {{ project.description|linebreaks }}
+                        {{ project.full_description|linebreaks }}
                     </div>
 
                     <!-- Impact Gallery Snippet -->
@@ -58,19 +58,29 @@
 <section class="py-5 bg-white border-top">
     <div class="container">
         <h3 class="fw-bold mb-4">Related Projects</h3>
+
         <div class="row g-4">
             {% for related in related_projects %}
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100">
-                    <img src="{{ related.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    <img src="{{ related.image.url }}"
+                         class="card-img-top"
+                         style="height: 200px; object-fit: cover;">
+
                     <div class="card-body">
                         <h5 class="fw-bold">{{ related.title }}</h5>
-                        <a href="{% url 'project_detail' related.id %}" class="stretched-link text-success text-decoration-none">View Project</a>
+                        <a href="{% url 'project_detail' related.slug %}"
+                           class="stretched-link text-success text-decoration-none">
+                           View Project
+                        </a>
                     </div>
                 </div>
             </div>
+            {% empty %}
+            <p class="text-muted">No related projects found.</p>
             {% endfor %}
         </div>
     </div>
 </section>
+
 {% endblock %}

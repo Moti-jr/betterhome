@@ -1,7 +1,7 @@
 # admin.py
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import ProjectCategory, Project, ProjectImage, ProjectUpdate, ProjectPartner, User, Blog
+from .models import ProjectCategory, Project, ProjectImage, ProjectUpdate, ProjectPartner, Event, Blog
 
 
 @admin.register(ProjectCategory)
@@ -151,4 +151,30 @@ class BlogAdmin(admin.ModelAdmin):
 
     readonly_fields = ('created_at', 'updated_at')
 
-# Register your models here.
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('title','category','start_date','end_date','location','status','is_featured',)
+    list_filter = ('status','category','is_featured','start_date',)
+    search_fields = ('title', 'description', 'location')
+    prepopulated_fields = {'slug': ('title',)}
+    ordering = ('-start_date',)
+    date_hierarchy = 'start_date'
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'slug', 'category', 'status', 'is_featured')
+        }),
+        ('Event Details', {
+            'fields': ('description', 'location', 'featured_image')
+        }),
+        ('Schedule', {
+            'fields': ('start_date', 'end_date')
+        }),
+        ('Publishing', {
+            'fields': ('published_at',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+    readonly_fields = ('created_at', 'updated_at', 'published_at')

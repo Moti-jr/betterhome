@@ -1,10 +1,9 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
-
-# Create your views here.
+from django.utils import timezone
 from django.shortcuts import render
 
-from betterhome.models import Project, ProjectCategory, Blog
+from betterhome.models import Project, ProjectCategory, Blog, Event
 
 
 def home(request):
@@ -25,7 +24,24 @@ def contact(request):
 
 
 def events(request):
-    return render(request, 'events.html')
+    now = timezone.now()
+
+    featured_event = Event.objects.filter(
+        status='published',
+        is_featured=True,
+        start_date__gte=now
+    ).order_by('start_date').first()
+
+    events = Event.objects.filter(
+        status='published',
+        start_date__gte=now
+    ).exclude(id=featured_event.id if featured_event else None).order_by('start_date')
+
+    context = {
+        'featured_event': featured_event,
+        'events': events,
+    }
+    return render(request, 'events.html', context)
 
 
 def donate(request):

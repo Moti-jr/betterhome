@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 # Create your views here.
 from django.shortcuts import render
 
-from betterhome.models import Project, ProjectCategory
+from betterhome.models import Project, ProjectCategory, Blog
 
 
 def home(request):
@@ -87,8 +87,34 @@ def gallery(request):
     return render(request, 'gallery.html')
 
 
-def blog_detail(request):
-    return render(request, 'blog_detail.html')
+def blog_detail(request, slug):
+    """Single blog detail page"""
+
+    blog = get_object_or_404(
+        Blog,
+        slug=slug,
+        status='published'
+    )
+
+    # Increment view count (only if field exists)
+    if hasattr(blog, 'views'):
+        blog.views += 1
+        blog.save(update_fields=['views'])
+
+    # Related blogs (same category, published, excluding current)
+    related_blogs = Blog.objects.filter(
+        category=blog.category,
+        status='published'
+    ).exclude(id=blog.id).order_by('-published_at')[:3]
+
+    context = {
+        'post': blog,
+        'related_blogs': related_blogs,
+    }
+
+    return render(request, 'blog_detail.html', context)
+
+
 
 
 def volunteer(request):
@@ -104,4 +130,22 @@ def newsletter_signup(request):
 
 
 def blog_list(request):
-    return render(request, 'blog_list.html')
+    selected_category = request.GET.get('category')
+
+    # Only categories that have published blogs
+    categories = ProjectCategory.objects.filter(
+        blogs__status='published'
+    ).distinct()
+
+    blogs = Blog.objects.filter(status='published')
+
+    if selected_category and selected_category != 'all':
+        blogs = blogs.filter(category__slug=selected_category)
+
+    context = {
+        'blogs': blogs,
+        'categories': categories,
+        'selected_category': selected_category,
+    }
+
+    return render(request, 'blog_list.html', context)

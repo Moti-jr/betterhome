@@ -35,6 +35,8 @@ urlpatterns = [
     path('volunteer', views.volunteer, name='volunteer'),
     path('blog_detail', views.blog_detail, name='blog_detail'),
     path('projects/<slug:slug>/', views.project_detail, name='project_detail'),
+    path('blogs/<slug:slug>/', views.blog_detail, name='blog_detail'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -10,32 +10,49 @@
             <div class="col-lg-8 text-center">
                 <h1 class="fw-bold text-bhi-green">Latest News & Stories</h1>
                 <p class="text-muted">Updates from the field, success stories, and upcoming events.</p>
-                
+
                 <!-- Search Form -->
                 <form class="d-flex mt-4" method="GET" action="{% url 'blog_list' %}">
-                    <input class="form-control form-control-lg me-2 border-0 shadow-sm" type="search" name="query" placeholder="Search articles..." aria-label="Search" value="{{ request.GET.query }}">
+                    <input class="form-control form-control-lg me-2 border-0 shadow-sm" type="search" name="query"
+                        placeholder="Search articles..." aria-label="Search" value="{{ request.GET.query }}">
                     <button class="btn btn-success btn-lg px-4" type="submit"><i class="bi bi-search"></i></button>
                 </form>
             </div>
         </div>
 
         <div class="row g-4">
-            {% for post in page_obj %}
+            {% for post in blogs %}
             <div class="col-lg-4 col-md-6">
                 <article class="card h-100 border-0 shadow-sm hover-lift">
-                    <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" style="height: 220px; object-fit: cover;">
+
+                    {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}"
+                        style="height: 220px; object-fit: cover;">
+                    {% endif %}
+
                     <div class="card-body">
                         <div class="small text-muted mb-2">
-                            {{ post.created_at|date:"F d, Y" }} • By {{ post.author }}
+                            {{ post.published_at|date:"F d, Y" }} • By {{ post.author }}
                         </div>
+
                         <h4 class="card-title fw-bold">
-                            <a href="{% url 'blog_detail' post.slug %}" class="text-decoration-none text-dark stretched-link">{{ post.title }}</a>
+                            <a href="{% url 'blog_detail' post.slug %}"
+                                class="text-decoration-none text-dark stretched-link">
+                                {{ post.title }}
+                            </a>
                         </h4>
-                        <p class="card-text text-secondary">{{ post.summary|truncatechars:120 }}</p>
+
+                        <p class="card-text text-secondary">
+                            {{ post.excerpt|truncatechars:120 }}
+                        </p>
                     </div>
+
                     <div class="card-footer bg-white border-top-0 pb-3">
-                        <span class="text-bhi-green fw-bold small">Read Story <i class="bi bi-arrow-right ms-1"></i></span>
+                        <span class="text-bhi-green fw-bold small">
+                            Read Story <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
                     </div>
+
                 </article>
             </div>
             {% empty %}
@@ -45,6 +62,7 @@
             {% endfor %}
         </div>
 
+
         <!-- Pagination -->
         {% if is_paginated %}
         <div class="mt-5">
@@ -52,12 +70,14 @@
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link border-0 text-success" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        <a class="page-link border-0 text-success"
+                            href="?page={{ page_obj.previous_page_number }}">Previous</a>
                     </li>
                     {% endif %}
-                    
-                    <li class="page-item active"><span class="page-link bg-success border-0">{{ page_obj.number }}</span></li>
-                    
+
+                    <li class="page-item active"><span class="page-link bg-success border-0">{{ page_obj.number
+                            }}</span></li>
+
                     {% if page_obj.has_next %}
                     <li class="page-item">
                         <a class="page-link border-0 text-success" href="?page={{ page_obj.next_page_number }}">Next</a>

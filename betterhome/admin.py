@@ -1,7 +1,7 @@
 # admin.py
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import ProjectCategory, Project, ProjectImage, ProjectUpdate, ProjectPartner
+from .models import ProjectCategory, Project, ProjectImage, ProjectUpdate, ProjectPartner, User, Blog
 
 
 @admin.register(ProjectCategory)
@@ -125,6 +125,30 @@ class ProjectPartnerAdmin(admin.ModelAdmin):
     project_count.short_description = 'Projects'
 
 
-from django.contrib import admin
+@admin.register(Blog)
+class BlogAdmin(admin.ModelAdmin):
+    list_display = ('title','category','author','status','is_featured','published_at','created_at',)
+    list_filter = ('status','category','is_featured','created_at',)
+    search_fields = ('title', 'content')
+    prepopulated_fields = {'slug': ('title',)}
+    date_hierarchy = 'published_at'
+    ordering = ('-published_at',)
+
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'slug', 'author', 'category', 'status')
+        }),
+        ('Content', {
+            'fields': ('excerpt', 'content', 'featured_image')
+        }),
+        ('Publishing Options', {
+            'fields': ('is_featured', 'published_at')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+        }),
+    )
+
+    readonly_fields = ('created_at', 'updated_at')
 
 # Register your models here.

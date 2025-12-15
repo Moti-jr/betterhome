@@ -4,72 +4,236 @@
 {% block title %}Gallery | Better Homes Initiative{% endblock %}
 
 {% block content %}
-<header class="py-5 bg-white text-center">
+<header class="py-5 bg-bhi-green text-white text-center">
     <div class="container">
-        <h1 class="fw-bold text-bhi-green">Our Gallery</h1>
-        <p class="text-muted">Moments captured from the field.</p>
+        <h1 class="fw-bold">Our Gallery</h1>
+        <p class="lead">Moments captured from the field.</p>
     </div>
 </header>
 
+<!-- Category Filter -->
+{% if categories %}
 <section class="py-4 bg-light">
     <div class="container">
-        <div class="row g-3" data-masonry='{"percentPosition": true }'>
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            <!-- All -->
+            <a href="{% url 'gallery' %}" 
+               class="btn {% if not selected_category %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">
+                All Photos
+            </a>
+            
+            <!-- Categories -->
+            {% for category in categories %}
+            <a href="?category={{ category.slug }}" 
+               class="btn {% if selected_category == category.slug %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4">
+                {{ category.name }} ({{ category.image_count }})
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="py-5">
+    <div class="container">
+        {% if images %}
+        <div class="row g-4">
             {% for image in images %}
-            <div class="col-md-4 col-sm-6">
-                <div class="card border-0 shadow-sm hover-lift">
-                    <img src="{{ image.url }}" 
-                         class="card-img-top gallery-img cursor-pointer" 
-                         alt="{{ image.caption }}" 
-                         data-bs-toggle="modal" 
-                         data-bs-target="#imageModal"
-                         data-img-src="{{ image.url }}"
-                         data-img-caption="{{ image.caption }}">
-                    {% if image.caption %}
-                    <div class="card-body p-2 text-center">
-                        <small class="text-muted">{{ image.caption }}</small>
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden gallery-card h-100">
+                    <div class="position-relative gallery-img-wrapper">
+                        <img src="{{ image.url }}" 
+                             class="card-img-top gallery-img" 
+                             alt="{{ image.title|default:'Gallery Image' }}"
+                             style="height: 300px; object-fit: cover; cursor: pointer;"
+                             data-bs-toggle="modal" 
+                             data-bs-target="#imageModal"
+                             data-img-src="{{ image.url }}"
+                             data-img-title="{{ image.title }}"
+                             data-img-caption="{{ image.caption }}"
+                             data-img-location="{{ image.location }}"
+                             data-img-photographer="{{ image.photographer }}"
+                             data-img-date="{{ image.date_taken|date:'F d, Y' }}">
+                        
+                        <!-- Category Badge -->
+                        {% if image.category %}
+                        <span class="badge bg-success position-absolute top-0 start-0 m-3">
+                            {{ image.category.name }}
+                        </span>
+                        {% endif %}
+                        
+                        <!-- Featured Badge -->
+                        {% if image.is_featured %}
+                        <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3">
+                            <i class="bi bi-star-fill"></i> Featured
+                        </span>
+                        {% endif %}
+                        
+                        <!-- Overlay on hover -->
+                        <div class="gallery-overlay">
+                            <i class="bi bi-zoom-in fs-1 text-white"></i>
+                        </div>
+                    </div>
+                    
+                    {% if image.title or image.caption %}
+                    <div class="card-body">
+                        {% if image.title %}
+                        <h6 class="card-title fw-bold mb-2">{{ image.title }}</h6>
+                        {% endif %}
+                        {% if image.caption %}
+                        <p class="card-text text-muted small mb-0">{{ image.caption|truncatewords:15 }}</p>
+                        {% endif %}
                     </div>
                     {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-images display-1 text-muted mb-3"></i>
+            <h3 class="text-muted">No images found</h3>
+            <p class="text-muted">Check back later for more photos!</p>
+        </div>
+        {% endif %}
     </div>
 </section>
 
-<!-- Lightbox Modal -->
+<!-- Enhanced Lightbox Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content bg-transparent border-0">
-            <div class="modal-body p-0 position-relative text-center">
-                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal" aria-label="Close"></button>
-                <img src="" id="modalImage" class="img-fluid rounded shadow-lg" alt="Full view">
-                <div class="bg-dark text-white p-2 mt-2 rounded d-none" id="modalCaption"></div>
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-0">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="modalTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <img src="" id="modalImage" class="img-fluid w-100" alt="Full view" style="max-height: 80vh; object-fit: contain;">
+            </div>
+            <div class="modal-footer border-0 bg-dark flex-column align-items-start">
+                <p class="mb-2 w-100" id="modalCaption"></p>
+                <div class="d-flex gap-4 w-100 flex-wrap small text-white-50">
+                    <span id="modalLocation"></span>
+                    <span id="modalPhotographer"></span>
+                    <span id="modalDate"></span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Custom Styles -->
+<style>
+.gallery-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.gallery-img-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 158, 73, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-img-wrapper:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-img {
+    transition: transform 0.3s ease;
+}
+
+.gallery-img-wrapper:hover .gallery-img {
+    transform: scale(1.1);
+}
+
+#imageModal .modal-content {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+#imageModal img {
+    border-radius: 0;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" async></script>
 <script>
-    // Simple script to pass image data to modal
+    // Enhanced modal script with all image data
     const imageModal = document.getElementById('imageModal');
+    
     imageModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
+        
+        // Get all data attributes
         const imgSrc = button.getAttribute('data-img-src');
+        const title = button.getAttribute('data-img-title');
         const caption = button.getAttribute('data-img-caption');
+        const location = button.getAttribute('data-img-location');
+        const photographer = button.getAttribute('data-img-photographer');
+        const date = button.getAttribute('data-img-date');
         
+        // Update modal elements
         const modalImg = imageModal.querySelector('#modalImage');
-        const modalCap = imageModal.querySelector('#modalCaption');
+        const modalTitle = imageModal.querySelector('#modalTitle');
+        const modalCaption = imageModal.querySelector('#modalCaption');
+        const modalLocation = imageModal.querySelector('#modalLocation');
+        const modalPhotographer = imageModal.querySelector('#modalPhotographer');
+        const modalDate = imageModal.querySelector('#modalDate');
         
+        // Set image
         modalImg.src = imgSrc;
+        
+        // Set title
+        modalTitle.textContent = title || 'Gallery Image';
+        
+        // Set caption
         if(caption) {
-            modalCap.textContent = caption;
-            modalCap.classList.remove('d-none');
+            modalCaption.textContent = caption;
+            modalCaption.style.display = 'block';
         } else {
-            modalCap.classList.add('d-none');
+            modalCaption.style.display = 'none';
+        }
+        
+        // Set location
+        if(location) {
+            modalLocation.innerHTML = '<i class="bi bi-geo-alt-fill me-1"></i>' + location;
+            modalLocation.style.display = 'inline-block';
+        } else {
+            modalLocation.style.display = 'none';
+        }
+        
+        // Set photographer
+        if(photographer) {
+            modalPhotographer.innerHTML = '<i class="bi bi-camera-fill me-1"></i>' + photographer;
+            modalPhotographer.style.display = 'inline-block';
+        } else {
+            modalPhotographer.style.display = 'none';
+        }
+        
+        // Set date
+        if(date && date !== 'None') {
+            modalDate.innerHTML = '<i class="bi bi-calendar3 me-1"></i>' + date;
+            modalDate.style.display = 'inline-block';
+        } else {
+            modalDate.style.display = 'none';
         }
     });
 </script>

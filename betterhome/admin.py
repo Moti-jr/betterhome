@@ -2,7 +2,88 @@ from .models import ProjectCategory, Project, ProjectImage, ProjectUpdate, Proje
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import TeamMember, TeamDepartment
+from .models import GalleryCategory, GalleryImage
 
+@admin.register(GalleryCategory)
+class GalleryCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'image_count', 'display_order', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['name', 'description']
+    prepopulated_fields = {'slug': ('name',)}
+
+    def image_count(self, obj):
+        return obj.image_count
+
+    image_count.short_description = 'Images'
+
+
+@admin.register(GalleryImage)
+class GalleryImageAdmin(admin.ModelAdmin):
+    list_display = [
+        'image_preview',
+        'title',
+        'category',
+        'project',
+        'is_featured',
+        'is_active',
+        'views',
+        'uploaded_at'
+    ]
+    list_filter = ['is_featured', 'is_active', 'category', 'uploaded_at']
+    search_fields = ['title', 'caption', 'location', 'photographer']
+    readonly_fields = ['image_preview', 'views', 'uploaded_at', 'updated_at']
+
+    fieldsets = (
+        ('Image', {
+            'fields': ('image', 'image_preview')
+        }),
+        ('Information', {
+            'fields': ('title', 'caption', 'category', 'project')
+        }),
+        ('Metadata', {
+            'fields': ('photographer', 'location', 'date_taken'),
+            'classes': ('collapse',)
+        }),
+        ('Display Options', {
+            'fields': ('is_featured', 'is_active', 'display_order')
+        }),
+        ('Statistics', {
+            'fields': ('views', 'uploaded_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-height: 150px; max-width: 200px; border-radius: 8px; object-fit: cover;"/>',
+                obj.image.url
+            )
+        return "-"
+
+    image_preview.short_description = 'Preview'
+
+    actions = ['make_featured', 'remove_featured', 'activate', 'deactivate']
+
+    def make_featured(self, request, queryset):
+        queryset.update(is_featured=True)
+
+    make_featured.short_description = "Mark as featured"
+
+    def remove_featured(self, request, queryset):
+        queryset.update(is_featured=False)
+
+    remove_featured.short_description = "Remove from featured"
+
+    def activate(self, request, queryset):
+        queryset.update(is_active=True)
+
+    activate.short_description = "Activate"
+
+    def deactivate(self, request, queryset):
+        queryset.update(is_active=False)
+
+    deactivate.short_description = "Deactivate"
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
     list_display = [

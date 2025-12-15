@@ -3,7 +3,8 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.shortcuts import render
 
-from betterhome.models import Project, ProjectCategory, Blog, Event, TeamMember, TeamDepartment
+from betterhome.models import Project, ProjectCategory, Blog, Event, TeamMember, TeamDepartment, GalleryImage, \
+    GalleryCategory
 
 
 def home(request):
@@ -100,7 +101,26 @@ def project_detail(request, slug):
 
 
 def gallery(request):
-    return render(request, 'gallery.html')
+    """Gallery page with category filter"""
+    category_slug = request.GET.get('category')
+
+    if category_slug:
+        images = GalleryImage.objects.filter(
+            is_active=True,
+            category__slug=category_slug,
+            category__is_active=True
+        )
+    else:
+        images = GalleryImage.objects.filter(is_active=True)
+
+    categories = GalleryCategory.objects.filter(is_active=True)
+
+    context = {
+        'images': images,
+        'categories': categories,
+        'selected_category': category_slug,
+    }
+    return render(request, 'gallery.html', context)
 
 
 def blog_detail(request, slug):

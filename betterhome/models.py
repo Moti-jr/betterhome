@@ -17,24 +17,182 @@ import os
 import uuid
 from datetime import date, datetime
 
+def gallery_image_path(instance, filename):
+    """Generate unique filename for gallery images using name and extension"""
+    # Get file extension
+    ext = filename.split('.')[-1].lower()
 
-# def team_photo_path(instance, filename):
-#     """Generate readable unique filename"""
-#     # Get file extension
-#     ext = filename.split('.')[-1].lower()
-#
-#     # Sanitize member name
-#     name_slug = slugify(instance.name) if instance.name else 'member'
-#
-#     # Add short UUID for uniqueness
-#     unique_id = uuid.uuid4().hex[:8]
-#
-#     # Result: team/2024/john-doe-a1b2c3d4.jpg
-#     unique_filename = f"{name_slug}-{unique_id}.{ext}"
-#
-#     year = datetime.now().year
-#     return os.path.join('team', str(year), unique_filename)
+    # Create a slug from the caption or use 'gallery-image'
+    if instance.caption:
+        name_slug = slugify(instance.caption)[:30]  # Limit length
+    else:
+        name_slug = 'gallery-image'
 
+    # Add unique identifier (short UUID)
+    unique_id = uuid.uuid4().hex[:8]
+
+    # Create timestamp
+    timestamp = datetime.now().strftime('%Y%m%d')
+
+    # Combine: gallery/2024/beautiful-moment-20241215-a1b2c3d4.jpg
+    unique_filename = f"{name_slug}-{timestamp}-{unique_id}.{ext}"
+
+    # Return path: gallery/2024/filename.jpg
+    year = datetime.now().year
+    return os.path.join('gallery', str(year), unique_filename)
+
+
+class GalleryCategory(models.Model):
+    """Categories for organizing gallery images"""
+
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+    description = models.TextField(blank=True)
+    display_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['display_order', 'name']
+        verbose_name = "Gallery Category"
+        verbose_name_plural = "Gallery Categories"
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    @property
+    def image_count(self):
+        return self.images.filter(is_active=True).count()
+
+
+class GalleryImage(models.Model):
+    """Gallery images for main gallery page (can be linked to projects optionally)"""
+
+    title = models.CharField(max_length=200, help_text="Image title (optional)")
+    caption = models.TextField(blank=True, help_text="Brief description of the image")
+    image = models.ImageField(
+        upload_to=gallery_image_path,
+        help_text="Upload image (recommended: 1200x800px or larger)"
+    )
+    category = models.ForeignKey(
+        GalleryCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='images'
+    )
+
+    # Optional: Link to project
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='gallery_photos',  # Clear name for main gallery photos
+        help_text="Link to related project (optional)"
+    )
+
+    # Image metadata
+    photographer = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Photographer name/credit"
+    )
+    location = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Where the photo was taken"
+    )
+    date_taken = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Date when photo was taken"
+    )
+
+    # Display options
+    is_featured = models.BooleanField(
+        default=False,
+        help_text="Show in featured gallery"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Show on website"
+    )
+    display_order = models.PositiveIntegerField(
+        default=0,
+        help_text="Lower numbers appear first"
+    )
+
+    # Metadata
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    views = models.PositiveIntegerField(default=0, editable=False)
+
+    class Meta:
+        ordering = ['-is_featured', 'display_order', '-uploaded_at']
+        verbose_name = "Gallery Image"
+        verbose_name_plural = "Gallery Images"
+
+    def __str__(self):
+        return self.title or f"Image {self.id}"
+
+    def save(self, *args, **kwargs):
+        # Delete old image if updating with new image
+        if self.pk:
+            try:
+                old_instance = GalleryImage.objects.get(pk=self.pk)
+                if old_instance.image and old_instance.image != self.image:
+                    if os.path.isfile(old_instance.image.path):
+                        os.remove(old_instance.image.path)
+            except GalleryImage.DoesNotExist:
+                pass
+
+        super().save(*args, **kwargs)
+
+        # Optimize image after saving
+        if self.image:
+            self.optimize_image()
+
+    def delete(self, *args, **kwargs):
+        """Delete image file when deleting gallery image"""
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+    def optimize_image(self):
+        """Optimize image for web"""
+        try:
+            img = Image.open(self.image.path)
+
+            # Convert to RGB if necessary
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+
+            # Max dimensions (maintain aspect ratio)
+            max_size = (1920, 1080)
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
+
+            # Save optimized image
+            img.save(self.image.path, quality=85, optimize=True)
+
+        except Exception as e:
+            print(f"Error optimizing image: {e}")
+
+    def increment_views(self):
+        """Increment view count"""
+        self.views += 1
+        self.save(update_fields=['views'])
+
+    @property
+    def url(self):
+        """Return image URL"""
+        return self.image.url if self.image else None
 
 
 def team_photo_path(instance, filename):
@@ -479,11 +637,11 @@ class Project(models.Model):
 
 
 class ProjectImage(models.Model):
-    """Additional images for project gallery"""
+    """Additional images for project gallery (specific to project detail pages)"""
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
-        related_name='gallery_images'
+        related_name='detail_images'  # Clear name for project detail page images
     )
     image = models.ImageField(upload_to='projects/gallery/%Y/%m/')
     caption = models.CharField(max_length=200, blank=True)
